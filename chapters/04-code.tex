@@ -1,0 +1,24 @@
+\section{附代码}
+
+课程论文可以把核心代码放在附录部分。较长代码建议只放关键步骤，完整代码可另附文件。
+
+\begin{lstlisting}[language=R]
+# Example: ARIMA model fitting in R
+y <- ts(cpi, frequency = 12, start = c(2015, 1))
+fit <- arima(y, order = c(1, 1, 1),
+             seasonal = list(order = c(0, 1, 1), period = 12))
+pred <- predict(fit, n.ahead = 12)
+print(pred$pred)
+\end{lstlisting}
+
+如果使用 Python，可将核心步骤写成：
+
+\begin{lstlisting}[language=Python]
+import statsmodels.api as sm
+
+model = sm.tsa.SARIMAX(y, order=(1, 1, 1),
+                       seasonal_order=(0, 1, 1, 12))
+result = model.fit()
+forecast = result.get_forecast(steps=12)
+print(forecast.predicted_mean)
+\end{lstlisting}
