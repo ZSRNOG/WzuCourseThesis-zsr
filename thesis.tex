@@ -1,0 +1,24 @@
+% !TeX program = xelatex
+% !BIB program = biber
+\documentclass{wzu-course-thesis}
+
+\input{front/metadata}
+\addbibresource{bib/references.bib}
+
+% Add extra packages here when needed, for example:
+% \usepackage{mhchem}
+% \usepackage{pgfplots}
+
+\begin{document}
+
+\makewzucoursecover
+\makewzucoursetoc
+
+\input{chapters/01-introduction}
+\input{chapters/02-stat-models}
+\input{chapters/03-writing-guide}
+\input{chapters/04-code}
+
+\makewzucoursebibliography
+
+\end{document}
