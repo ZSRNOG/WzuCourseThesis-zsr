@@ -1,0 +1,43 @@
+\section{写作与排版指南}
+
+\subsection{图表}
+
+表格建议使用三线表。变量说明表可写成 \cref{tab:variables}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{变量说明}
+  \label{tab:variables}
+  \begin{tabular}{lll}
+    \toprule
+    变量 & 含义 & 类型 \\
+    \midrule
+    \(y_t\) & 居民消费价格指数 & 时间序列 \\
+    \(x_{1t}\) & 居民收入指数 & 协变量 \\
+    \(x_{2t}\) & 就业景气指数 & 协变量 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+插入图片时，把图片放入 \texttt{figures/} 目录，再使用 \verb|\includegraphics|。如果课程论文不要求图目录，可以直接使用普通 \texttt{figure} 环境。
+
+\subsection{引用与参考文献}
+
+正文引用使用 \verb|\cite|。例如，时间序列课程论文可引用 Box--Jenkins 方法\cite{box2015time}，贝叶斯建模可引用 Gelman 等教材\cite{gelman2013bayesian}，应用统计课程报告也可引用软件或在线资料\cite{rmanual2026}。
+
+\begin{lstlisting}[language=TeX]
+单篇文献：\cite{box2015time}
+多篇文献：\cite{box2015time,gelman2013bayesian}
+\end{lstlisting}
+
+\subsection{常用文字格式}
+
+文件名、命令和变量名可用等宽字体表示，例如 \texttt{thesis.tex}。封面信息文件在 \texttt{front/} 目录下。编译命令可写成：
+
+\begin{lstlisting}[language=bash]
+latexmk -xelatex thesis.tex
+\end{lstlisting}
+
+需要强调时，可使用 \textbf{黑体强调} 或 \emph{English emphasis}，但正式论文中不建议过度使用彩色或下划线。
+
+带单位的数值建议使用 \verb|\SI|，例如 \SI{95}{\percent} 置信区间、12 个月样本窗口和 \SI{1.5}{\giga\byte} 数据文件。
