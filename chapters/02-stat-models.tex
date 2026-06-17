@@ -1,0 +1,126 @@
+\section{应用统计模型示例}
+
+\subsection{线性回归与矩阵表达}
+
+多元线性回归可以写为
+\begin{equation}
+  \Vector{y}=\Matrix{X}\Vector{\beta}+\Vector{\varepsilon},\qquad
+  \Vector{\varepsilon}\sim N(\Vector{0},\sigma^2\Matrix{I}_n).
+\end{equation}
+其中 \(\Matrix{X}\in\mathbb{R}^{n\times p}\)，\(\Vector{\beta}\in\mathbb{R}^{p}\)。最小二乘估计量为
+\begin{equation}
+  \hat{\Vector{\beta}}
+  =(\Matrix{X}^{\mathsf T}\Matrix{X})^{-1}\Matrix{X}^{\mathsf T}\Vector{y}.
+\end{equation}
+若存在多重共线性，可使用岭回归：
+\begin{align}
+  \hat{\Vector{\beta}}_{\lambda}
+  &=\argmin_{\Vector{\beta}}\left\{
+    \lVert \Vector{y}-\Matrix{X}\Vector{\beta}\rVert_2^2
+    +\lambda\lVert\Vector{\beta}\rVert_2^2
+  \right\} \notag\\
+  &=(\Matrix{X}^{\mathsf T}\Matrix{X}+\lambda\Matrix{I}_p)^{-1}
+    \Matrix{X}^{\mathsf T}\Vector{y}.
+  \label{eq:ridge}
+\end{align}
+
+\subsection{广义线性模型}
+
+二元响应变量 \(Y_i\in\{0,1\}\) 常用 Logistic 回归建模。设成功概率为 \(p_i=\Prob(Y_i=1\mid \Vector{x}_i)\)，则
+\begin{equation}
+  \logit(p_i)=\log\frac{p_i}{1-p_i}=\Vector{x}_i^{\mathsf T}\Vector{\beta}.
+\end{equation}
+对应的对数似然函数为
+\begin{equation}
+  \ell(\Vector{\beta})
+  =\sum_{i=1}^{n}\left[
+    y_i\Vector{x}_i^{\mathsf T}\Vector{\beta}
+    -\log\left(1+\exp(\Vector{x}_i^{\mathsf T}\Vector{\beta})\right)
+  \right].
+  \label{eq:logit-likelihood}
+\end{equation}
+
+最大似然估计可以通过 Newton--Raphson 或 Fisher scoring 迭代求解：
+\begin{equation}
+  \Vector{\beta}^{(k+1)}
+  =\Vector{\beta}^{(k)}
+  +\left(\Matrix{X}^{\mathsf T}\Matrix{W}^{(k)}\Matrix{X}\right)^{-1}
+   \Matrix{X}^{\mathsf T}\left(\Vector{y}-\Vector{p}^{(k)}\right).
+\end{equation}
+
+\subsection{时间序列模型}
+
+平稳 ARMA\((p,q)\) 模型可写为
+\begin{equation}
+  \phi(B)(y_t-\mu)=\theta(B)\varepsilon_t,\qquad
+  \varepsilon_t\sim \operatorname{WN}(0,\sigma^2),
+\end{equation}
+其中 \(B\) 为滞后算子，\(\phi(B)=1-\phi_1B-\cdots-\phi_pB^p\)，\(\theta(B)=1+\theta_1B+\cdots+\theta_qB^q\)。
+
+季节性 ARIMA 模型可写为
+\begin{equation}
+  \Phi(B^s)\phi(B)(1-B)^d(1-B^s)^D y_t
+  =\Theta(B^s)\theta(B)\varepsilon_t.
+  \label{eq:sarima}
+\end{equation}
+该式适合处理具有月度、季度或周度季节周期的经济统计指标。
+
+\subsection{状态空间模型与卡尔曼滤波}
+
+状态空间模型把不可观测状态 \(\Vector{\alpha}_t\) 与观测值 \(y_t\) 分开：
+\begin{align}
+  y_t &= \Matrix{Z}_t\Vector{\alpha}_t+\varepsilon_t,
+  &\varepsilon_t&\sim N(0,\Matrix{H}_t),\\
+  \Vector{\alpha}_{t+1} &= \Matrix{T}_t\Vector{\alpha}_t+\Matrix{R}_t\Vector{\eta}_t,
+  &\Vector{\eta}_t&\sim N(\Vector{0},\Matrix{Q}_t).
+\end{align}
+
+卡尔曼滤波的预测与更新步骤为
+\begin{align}
+  \Vector{a}_{t\mid t-1} &= \Matrix{T}_{t-1}\Vector{a}_{t-1\mid t-1},\\
+  \Matrix{P}_{t\mid t-1} &= \Matrix{T}_{t-1}\Matrix{P}_{t-1\mid t-1}\Matrix{T}_{t-1}^{\mathsf T}
+  +\Matrix{R}_{t-1}\Matrix{Q}_{t-1}\Matrix{R}_{t-1}^{\mathsf T},\\
+  \Vector{K}_t &= \Matrix{P}_{t\mid t-1}\Matrix{Z}_t^{\mathsf T}
+  \left(\Matrix{Z}_t\Matrix{P}_{t\mid t-1}\Matrix{Z}_t^{\mathsf T}+\Matrix{H}_t\right)^{-1},\\
+  \Vector{a}_{t\mid t} &= \Vector{a}_{t\mid t-1}
+  +\Vector{K}_t\left(y_t-\Matrix{Z}_t\Vector{a}_{t\mid t-1}\right).
+\end{align}
+
+\subsection{贝叶斯层级模型}
+
+贝叶斯建模可将参数不确定性显式写入模型。以正态均值模型为例：
+\begin{align}
+  y_i\mid \theta,\sigma^2 &\sim N(\theta,\sigma^2),\\
+  \theta\mid \tau^2 &\sim N(\mu_0,\tau^2),\\
+  \sigma^2 &\sim \operatorname{InvGamma}(a_0,b_0).
+\end{align}
+后验分布满足
+\begin{equation}
+  p(\theta,\sigma^2\mid \Vector{y})
+  \propto p(\Vector{y}\mid \theta,\sigma^2)p(\theta\mid\tau^2)p(\sigma^2).
+\end{equation}
+
+\subsection{Bootstrap 置信区间}
+
+Bootstrap 方法适合在解析方差较难推导时评估估计量不确定性。给定重复抽样估计量
+\(\hat{\theta}^{*(1)},\ldots,\hat{\theta}^{*(B)}\)，百分位区间为
+\begin{equation}
+  \left[
+    \hat{\theta}^{*}_{(\lfloor B\alpha/2\rfloor)},
+    \hat{\theta}^{*}_{(\lceil B(1-\alpha/2)\rceil)}
+  \right].
+\end{equation}
+
+\begin{theorem}[样本均值的一致性]
+若 \(X_1,\ldots,X_n\) 独立同分布，且 \(\E X_i=\mu\)、\(\Var(X_i)=\sigma^2<\infty\)，则 \(\bar{X}_n\overset{p}{\to}\mu\)。
+\end{theorem}
+
+\begin{proof}
+由切比雪夫不等式，
+\[
+  \Prob(|\bar{X}_n-\mu|>\varepsilon)
+  \le \frac{\Var(\bar{X}_n)}{\varepsilon^2}
+  =\frac{\sigma^2}{n\varepsilon^2}\to 0.
+\]
+因此 \(\bar{X}_n\) 依概率收敛到 \(\mu\)。
+\end{proof}
